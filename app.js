@@ -236,6 +236,84 @@ var profit_factors = {
         {level: 1000, multi: 2, short_name: ''},
     ]
 }
+var cash_upgrades = [
+    {name: 'Little Umbrellas', multi: 3, short_name: 'lemon'},
+    {name: 'Funny Pages', multi: 3, short_name: 'newspaper'},
+    {name: 'Drive Through Wash', multi: 3, short_name: 'car'},
+    {name: 'Robot Cars', multi: 3, short_name: 'pizza'},
+    {name: 'Pre-Packaged Pastries', multi: 3, short_name: 'donut'},
+    {name: 'Shrimp Satellite', multi: 3, short_name: 'shrimp'},
+    {name: 'Team Jet', multi: 3, short_name: 'hockey'},
+    {name: '3D Cameras', multi: 3, short_name: 'movie'},
+    {name: 'Gold Plated Vaults', multi: 3, short_name: 'bank'},
+    {name: 'Spill Proof Tankers', multi: 3, short_name: 'oil'},
+    {name: 'Monopoly', multi: 3, short_name: 'overall'},
+
+    {name: 'Novelty Straws', multi: 3, short_name: 'lemon'},
+    {name: 'Sports Pages', multi: 3, short_name: 'newspaper'},
+    {name: 'Automatic Vacuums', multi: 3, short_name: 'car'},
+    {name: 'Online Ordering', multi: 3, short_name: 'pizza'},
+    {name: 'Donut Holes', multi: 3, short_name: 'donut'},
+    {name: 'Shrimp Magnets', multi: 3, short_name: 'shrimp'},
+    {name: 'Energy Drink Sponsors', multi: 3, short_name: 'hockey'},
+    {name: 'Green Screens', multi: 3, short_name: 'movie'},
+    {name: 'Free Fancy Pens', multi: 3, short_name: 'bank'},
+    {name: 'Eco-safe Pipeline', multi: 3, short_name: 'oil'},
+    {name: 'Monopsony', multi: 3, short_name: 'overall'},
+    {name: 'Holy Moola', multi: 1.5, short_name: 'angel'}, // 1%
+
+    {name: 'Imported Ice Cubes', multi: 3, short_name: 'lemon'},
+    {name: 'Business Pages', multi: 3, short_name: 'newspaper'},
+    {name: 'Microfiber Sponges', multi: 3, short_name: 'car'},
+    {name: 'Drone Delivery', multi: 3, short_name: 'pizza'},
+    {name: 'Bacon Sprinkles', multi: 3, short_name: 'donut'},
+    {name: 'Carbon Nanotube Nets', multi: 3, short_name: 'shrimp'},
+    {name: 'GPS Puck Tracker', multi: 3, short_name: 'hockey'},
+    {name: 'Smell-O-Vision', multi: 3, short_name: 'movie'},
+    {name: 'Credit Card Implants', multi: 3, short_name: 'bank'},
+    {name: 'Hyperloop Pumps', multi: 3, short_name: 'oil'},
+    {name: 'Illuminati', multi: 3, short_name: 'overall'},
+    {name: 'Immaculute Consumption', multi: 4/3, short_name: 'angel'}, // 1%
+
+    {name: '', multi: 3, short_name: 'lemon'},
+    {name: '', multi: 3, short_name: 'newspaper'},
+    {name: '', multi: 3, short_name: 'car'},
+    {name: '', multi: 3, short_name: 'pizza'},
+    {name: '', multi: 3, short_name: 'donut'},
+    {name: '', multi: 3, short_name: 'shrimp'},
+    {name: '', multi: 3, short_name: 'hockey'},
+    {name: '', multi: 3, short_name: 'movie'},
+    {name: '', multi: 3, short_name: 'bank'},
+    {name: '', multi: 3, short_name: 'oil'},
+    {name: '', multi: 3, short_name: 'overall'},
+    {name: '', multi: 1.5, short_name: 'angel'}, // 2%
+
+    {name: '', multi: 7, short_name: 'lemon'},
+    {name: '', multi: 7, short_name: 'newspaper'},
+    {name: '', multi: 7, short_name: 'car'},
+    {name: '', multi: 7, short_name: 'pizza'},
+    {name: '', multi: 7, short_name: 'donut'},
+    {name: '', multi: 7, short_name: 'shrimp'},
+    {name: '', multi: 7, short_name: 'hockey'},
+    {name: '', multi: 7, short_name: 'movie'},
+    {name: '', multi: 7, short_name: 'bank'},
+    {name: '', multi: 7, short_name: 'oil'},
+    {name: '', multi: 7, short_name: 'overall'},
+
+    {name: '', multi: 3, short_name: 'lemon'},
+    {name: '', multi: 3, short_name: 'newspaper'},
+    {name: '', multi: 3, short_name: 'car'},
+    {name: '', multi: 3, short_name: 'pizza'},
+    {name: '', multi: 3, short_name: 'donut'},
+    {name: '', multi: 3, short_name: 'shrimp'},
+    {name: '', multi: 3, short_name: 'hockey'},
+    {name: '', multi: 3, short_name: 'movie'},
+    {name: '', multi: 3, short_name: 'bank'},
+    {name: '', multi: 3, short_name: 'oil'},
+    {name: '', multi: 3, short_name: 'overall'}
+    //*/
+];
+
 function serialize_object(form_selector) {
     var formdata = $(form_selector).serializeArray();
     var data = {};
@@ -296,8 +374,12 @@ function get_cost(base_cost, price_factor, level, how_many) {
 }
 /////////// profit section
 //TODO handle angel upgrades
-function get_angel_modifier(angels) {
-    return 1 + angels * .02;
+function get_angel_modifier(angels, cash_upgrades) {
+    var angel_multiplier = .02;
+    if(cash_upgrades >= 23) angel_multiplier += .01;
+    if(cash_upgrades >= 35) angel_multiplier += .01;
+    if(cash_upgrades >= 47) angel_multiplier += .02;
+    return 1 + angels * angel_multiplier;
 }
 /*
 get_specific_profit_multiplier
@@ -337,12 +419,24 @@ function get_overall_profit_multiplier(lowest_biz_level) {
     // they're all 2 factor, skip using _.reduce
     return 1 + 2 * time_factor_exp;
 }
+function get_cash_upgrade_modifier(name, num_cash_upgrades) {
+    var multi = 1;
+    for(var i=0, iLen=Math.min(cash_upgrades.length, num_cash_upgrades);i<iLen;i++) {
+        var cur_upgrade = cash_upgrades[i];
+        if(cur_upgrade.short_name === name)
+            multi = multi * cur_upgrade.multi;
+    }
+    return multi;
+}
 ///////////////// app section
 // click event handler
 function biz_info(biz_data) {
     var angels = Number($('#angel_input').val());
+    var cash_upgrades = Number($('#cash_upgrade_input').val());
     var lowest_biz_level = _.min(_.map(_.values(biz_data), Number));
     var newspaper_level = Number(biz_data.newspaper);
+
+    var profit_sum = 0;
 
     _.each(_.pairs(biz_data), function(name_level_pair) {
         var name = name_level_pair[0];
@@ -354,11 +448,14 @@ function biz_info(biz_data) {
         var time_to_profit = get_time_to_profit(name, level, lowest_biz_level);
 
         var profit = get_base_profit(name, level).toExponential(3);
-        var angel_mod = get_angel_modifier(angels);
+        var angel_mod = get_angel_modifier(angels, cash_upgrades);
         var overall_mod = get_overall_profit_multiplier(lowest_biz_level);
         var specific_mod = get_specific_profit_multiplier(name, level, newspaper_level);
-        console.log(name, profit, '*angel', angel_mod, '*all', overall_mod, '*spec', specific_mod);
-        var total_profit = profit * angel_mod * overall_mod * specific_mod;
+        var cash_mod = get_cash_upgrade_modifier(name, cash_upgrades);
+        console.log(name, profit, '*angel', angel_mod, '*all', overall_mod, '*spec', specific_mod, '*cash_upgrade', cash_mod);
+        var total_profit = profit * angel_mod * overall_mod * specific_mod * cash_mod;
+
+        profit_sum += total_profit;
 
         //var cost_1 = get_cost(biz.initial_price, biz.price_factor, level, 1);
         //var cost_10 = get_cost(biz.initial_price, biz.price_factor, level, 10);
@@ -368,7 +465,7 @@ function biz_info(biz_data) {
         var label = $('#biz_time_'+name);
         label.text(time_to_profit);
         var label = $('#biz_profit_'+name);
-        label.text(total_profit);
+        label.text(total_profit.toExponential(3));
         var label = $('#biz_productivity_'+name);
         label.text((total_profit/time_to_profit).toExponential(3));
         /*
@@ -380,6 +477,7 @@ function biz_info(biz_data) {
         label.text(cost_100.toExponential(3));
         //*/
     });
+    console.log(profit_sum.toExponential(3));
 }
 var businesses = {
     lemon: make_biz(    'lemon',       'Lemonade Stand',       3.738,       1.07,   0.6,    1),
