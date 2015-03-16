@@ -250,6 +250,14 @@ function serialize_object(form_selector) {
 function level_cutoff_filter_func(level, factor) {
     return level >= factor.level;
 }
+function filter_factors_by_name(name, memo, cur_factor) {
+    // only factor in matching names
+    var ret = memo;
+    if(cur_factor.short_name === name) {
+        ret = ret * cur_factor.multi;
+    }
+    return ret;
+}
 function make_biz(short_name, long_name, price, p_factor, time, profit) {
     return {
         short_name: short_name,
@@ -286,14 +294,55 @@ function get_cost(base_cost, price_factor, level, how_many) {
 
     return cost;
 }
+/////////// profit section
 //TODO handle angel upgrades
 function get_angel_modifier(angels) {
     return 1 + angels * .02;
 }
+/*
+get_specific_profit_multiplier
+
+Handles profit multipliers from the named business as well as multipliers for that
+business from the Newspaper business. When processing Newspaper, it only processes
+the newspaper factors once.
+//*/
+function get_specific_profit_multiplier(name, level, newspaper_level) {
+    var reducer = _.partial(filter_factors_by_name, name);
+
+    var filter_func = _.partial(level_cutoff_filter_func, level);
+    // handle the biz's own factors
+    var factors = _.filter(profit_factors[name], filter_func);
+    factors = _.filter(factors, function(cur_item) {
+        return name === cur_item.short_name;
+    });
+    var self_factor = _.reduce(factors, reducer, 1);
+
+    // don't process itself twice
+    if(name === 'newspaper')
+        return self_factor;
+
+    // also handle the factors in newspaper
+    var filter_func = _.partial(level_cutoff_filter_func, newspaper_level);
+    var factors = _.filter(profit_factors.newspaper, filter_func);
+    factors = _.filter(factors, function(cur_item) {
+        return name === cur_item.short_name;
+    });
+    var newspaper_factor = _.reduce(factors, reducer, 1);
+
+    return self_factor * newspaper_factor;
+}
+function get_overall_profit_multiplier(lowest_biz_level) {
+    var filter_func = _.partial(level_cutoff_filter_func, lowest_biz_level);
+    var time_factor_exp = _.filter(profit_factors.overall, filter_func).length;
+    // they're all 2 factor, skip using _.reduce
+    return 1 + 2 * time_factor_exp;
+}
+///////////////// app section
 // click event handler
 function biz_info(biz_data) {
     var angels = Number($('#angel_input').val());
     var lowest_biz_level = _.min(_.map(_.values(biz_data), Number));
+    var newspaper_level = Number(biz_data.newspaper);
 
     _.each(_.pairs(biz_data), function(name_level_pair) {
         var name = name_level_pair[0];
@@ -305,7 +354,11 @@ function biz_info(biz_data) {
         var time_to_profit = get_time_to_profit(name, level, lowest_biz_level);
 
         var profit = get_base_profit(name, level).toExponential(3);
-        var profit = profit *  get_angel_modifier(angels);
+        var angel_mod = get_angel_modifier(angels);
+        var overall_mod = get_overall_profit_multiplier(lowest_biz_level);
+        var specific_mod = get_specific_profit_multiplier(name, level, newspaper_level);
+        console.log(name, profit, '*angel', angel_mod, '*all', overall_mod, '*spec', specific_mod);
+        var total_profit = profit * angel_mod * overall_mod * specific_mod;
 
         //var cost_1 = get_cost(biz.initial_price, biz.price_factor, level, 1);
         //var cost_10 = get_cost(biz.initial_price, biz.price_factor, level, 10);
@@ -315,9 +368,9 @@ function biz_info(biz_data) {
         var label = $('#biz_time_'+name);
         label.text(time_to_profit);
         var label = $('#biz_profit_'+name);
-        label.text(profit);
+        label.text(total_profit);
         var label = $('#biz_productivity_'+name);
-        label.text((profit/time_to_profit).toExponential(3));
+        label.text((total_profit/time_to_profit).toExponential(3));
         /*
         var label = $('#biz_1_cost_'+name);
         label.text(cost_1.toExponential(3));
