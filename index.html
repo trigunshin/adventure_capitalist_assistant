@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>adventure calc</title>
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+	<div id='form_anchor' class='container'>
+		<form id='angel_data' class='form-horizontal'>
+			<div class='row form-group'>
+				<label for="angel_input" class="col-sm-2 control-label">Angels</label>
+				<div class="col-sm-2">
+	            	<input type="text" class="form-control" id="angel_input" name="angels" placeholder="Angels" value="0">
+	        	</div>
+			</div>
+		</form>
+		<div class='row'>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-1'>Time</div>
+			<div class='col-sm-1'>Profit</div>
+			<div class='col-sm-1'>Productivity</div>
+			<div class='col-sm-1'>1x Cost</div>
+			<div class='col-sm-1'>10x Cost</div>
+			<div class='col-sm-1'>100x Cost</div>
+		</div>
+		<br>
+		
+	</div>
+</body>
+<script id="biz_form_template" type='text/plain'>
+<form id="biz_data" class="form-horizontal">
+    <% _.each(businesses, function(biz) { %>
+    <div class="form-group">
+        <label for="biz_<%= biz.short_name %>" class="col-sm-2 control-label"><%= biz.name %></label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" id="biz_<%= biz.short_name %>" name="<%= biz.short_name %>" placeholder="Level" value="200">
+        </div>
+        <div id="biz_time_<%= biz.short_name %>" class="col-sm-1"></div>
+        <div id="biz_profit_<%= biz.short_name %>" class="col-sm-1"></div>
+        <div id="biz_productivity_<%= biz.short_name %>" class="col-sm-1"></div>
+        <div id="biz_1_cost_<%= biz.short_name %>" class="col-sm-1"></div>
+        <div id="biz_10_cost_<%= biz.short_name %>" class="col-sm-1"></div>
+        <div id="biz_100_cost_<%= biz.short_name %>" class="col-sm-1"></div>
+    </div>
+    <% }); %>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button id='biz_data_submit' type="submit" class="btn btn-default">Calculate!</button>
+        </div>
+    </div>
+</form>
+</script>
+<!-- script section -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"></script>
+<script src="https//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="app.js"></script>
+</html>
