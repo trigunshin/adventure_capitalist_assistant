@@ -373,7 +373,6 @@ function get_cost(base_cost, price_factor, level, how_many) {
     return cost;
 }
 /////////// profit section
-//TODO handle angel upgrades
 function get_angel_modifier(angels, cash_upgrades) {
     var angel_multiplier = .02;
     if(cash_upgrades >= 23) angel_multiplier += .01;
@@ -419,6 +418,7 @@ function get_overall_profit_multiplier(lowest_biz_level) {
     // they're all 2 factor, skip using _.reduce
     return 1 + 2 * time_factor_exp;
 }
+
 function get_cash_upgrade_modifier(name, num_cash_upgrades) {
     var multi = 1;
     for(var i=0, iLen=Math.min(cash_upgrades.length, num_cash_upgrades);i<iLen;i++) {
@@ -431,10 +431,12 @@ function get_cash_upgrade_modifier(name, num_cash_upgrades) {
 ///////////////// app section
 // click event handler
 function biz_info(biz_data) {
+    var advertisement_multiplier = 2;
     var angels = Number($('#angel_input').val());
-    var cash_upgrades = Number($('#cash_upgrade_input').val());
     var lowest_biz_level = _.min(_.map(_.values(biz_data), Number));
     var newspaper_level = Number(biz_data.newspaper);
+    var cash_upgrades = Number($('#cash_upgrade_input').val());
+    var overall_cash_mod = get_cash_upgrade_modifier('overall', cash_upgrades);
 
     var profit_sum = 0;
 
@@ -451,9 +453,9 @@ function biz_info(biz_data) {
         var angel_mod = get_angel_modifier(angels, cash_upgrades);
         var overall_mod = get_overall_profit_multiplier(lowest_biz_level);
         var specific_mod = get_specific_profit_multiplier(name, level, newspaper_level);
-        var cash_mod = get_cash_upgrade_modifier(name, cash_upgrades);
-        console.log(name, profit, '*angel', angel_mod, '*all', overall_mod, '*spec', specific_mod, '*cash_upgrade', cash_mod);
-        var total_profit = profit * angel_mod * overall_mod * specific_mod * cash_mod;
+        var cash_mod = overall_cash_mod * get_cash_upgrade_modifier(name, cash_upgrades);
+        //console.log(name, profit, '*angel', angel_mod, '*all', overall_mod, '*spec', specific_mod, '*cash_upgrade', cash_mod);
+        var total_profit = profit * angel_mod * overall_mod * specific_mod * cash_mod * advertisement_multiplier;
 
         profit_sum += total_profit;
 
