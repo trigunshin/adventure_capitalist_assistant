@@ -459,7 +459,7 @@ function biz_info(biz_data) {
 
         profit_sum += total_profit;
 
-        //var cost_1 = get_cost(biz.initial_price, biz.price_factor, level, 1);
+        var cost_1 = get_cost(biz.initial_price, biz.price_factor, level, 1);
         //var cost_10 = get_cost(biz.initial_price, biz.price_factor, level, 10);
         //var cost_100 = get_cost(biz.initial_price, biz.price_factor, level, 100);
 
@@ -470,9 +470,10 @@ function biz_info(biz_data) {
         label.text(total_profit.toExponential(3));
         var label = $('#biz_productivity_'+name);
         label.text((total_profit/time_to_profit).toExponential(3));
-        /*
+        
         var label = $('#biz_1_cost_'+name);
         label.text(cost_1.toExponential(3));
+        /*
         var label = $('#biz_10_cost_'+name);
         label.text(cost_10.toExponential(3));
         var label = $('#biz_100_cost_'+name);
